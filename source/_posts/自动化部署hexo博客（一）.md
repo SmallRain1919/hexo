@@ -1,4 +1,12 @@
-## 自动化部署hexo博客（一）
+---
+title: 自动化部署hexo博客（一） #文章标题
+date: 2024-12-25 20:26:00 #发布时间
+tags: hexo博客 #标签
+description: 从入门到精通部署hexo个人博客 #文章描述
+cover: https://blog-1310550159.cos.ap-nanjing.myqcloud.com/acg/images/58681464_p0.png #文章封面图片
+---
+
+
 ### 一、部署git私有仓库
 > 注意：推荐Centos或Uuntu系统，目前我用的是CentOS系统作为服务器
 #### 1.1 安装git工具
