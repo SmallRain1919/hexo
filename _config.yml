@@ -104,3 +104,4 @@ deploy:
   type: git
   repository: git@blog.smallrains.com:/home/git/repo/hexo.git
   branch: master
+
