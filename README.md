@@ -24,7 +24,7 @@
 
 1. 克隆项目
 ```bash
-git clone git@blog.smallrains.com:/home/git/repo/hexo.git
+git clone https://github.com/SmallRain1919/hexo.git
 cd hexo
 ```
 
