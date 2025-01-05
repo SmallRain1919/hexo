@@ -13,6 +13,35 @@
 - 📊 文章阅读统计
 - 🔐 安全的评论系统
 
+## 实例代码
+```bash
+[root@localhost data]#  mkdir -p hexo
+[root@localhost data]# git clone https://github.com/smallrain1919/hexo.git ./hexo/
+
+[root@localhost data]# cd hexo/
+[root@localhost hexo]# rm -rf node_modules/ db.json public/
+[root@localhost hexo]# npm install
+
+
+## 查看hexo路径
+[root@localhost hexo]# cd /data/hexo/node_modules/hexo-cli/bin
+[root@localhost bin]# pwd
+/data/hexo/node_modules/hexo-cli/bin
+## 编辑/etc/profile,需要在底部追加以下内容然后保存
+[root@localhost hexo]#  cd
+[root@localhost ~]# vim /etc/profile
+export    HEXO_PATH=/data/hexo/node_modules/hexo-cli/bin
+export    PATH=$HEXO_PATH:$PATH    
+[root@localhost ~]#  source /etc/profile
+
+## 更改可执行权限
+[root@localhost ~]# chmod +x /data/hexo/node_modules/hexo-cli/bin/hexo
+
+## 测试
+[root@localhost ~]# cd /data/hexo
+[root@localhost hexo]# hexo clean && hexo g && hexo s
+##然后使用浏览器打开访问http://localhost:4000/，如果报错请检查主题butterfly依赖问题
+```
 ## 🛠 技术栈
 
 - Hexo v5.2.2
