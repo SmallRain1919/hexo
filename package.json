@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "cheerio": "^1.0.0",
+    "deploy-git": "^0.0.3",
     "hexo": "^7.0.0",
     "hexo-deployer-git": "^4.0.0",
     "hexo-generator-archive": "^2.0.0",
@@ -27,6 +28,7 @@
     "hexo-renderer-stylus": "^3.0.1",
     "hexo-server": "^3.0.0",
     "hexo-theme-landscape": "^1.0.0",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "simple-git": "^3.27.0"
   }
 }

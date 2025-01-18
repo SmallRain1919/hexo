@@ -1,0 +1,251 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux下使用fdisk新增磁盘并管理 | 小鱼技术栈</title><meta name="author" content="小鱼不吃鱼."><meta name="copyright" content="小鱼不吃鱼."><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Linux下使用fdisk新增磁盘并管理如果是需要新增硬盘并且分区，有这篇文章就够了 1. 查看磁盘信息admin@localhost:~$ lsblk -lNAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTSloop0    7:0    0  74.2M  1 loop &#x2F;snap&#x2F;core22&#x2F;1621loop1    7:1    0     4K  1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux下使用fdisk新增磁盘并管理">
+<meta property="og:url" content="http://smallrains.com/2025/01/18/Linux%E4%B8%8B%E4%BD%BF%E7%94%A8fdisk%E6%96%B0%E5%A2%9E%E7%A3%81%E7%9B%98%E5%B9%B6%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="小鱼技术栈">
+<meta property="og:description" content="Linux下使用fdisk新增磁盘并管理如果是需要新增硬盘并且分区，有这篇文章就够了 1. 查看磁盘信息admin@localhost:~$ lsblk -lNAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTSloop0    7:0    0  74.2M  1 loop &#x2F;snap&#x2F;core22&#x2F;1621loop1    7:1    0     4K  1">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://www.dmoe.cc/random.php">
+<meta property="article:published_time" content="2025-01-18T07:40:00.000Z">
+<meta property="article:modified_time" content="2025-01-18T02:27:21.485Z">
+<meta property="article:author" content="小鱼不吃鱼.">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="磁盘管理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://www.dmoe.cc/random.php"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://smallrains.com/2025/01/18/Linux%E4%B8%8B%E4%BD%BF%E7%94%A8fdisk%E6%96%B0%E5%A2%9E%E7%A3%81%E7%9B%98%E5%B9%B6%E7%AE%A1%E7%90%86/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.2.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux下使用fdisk新增磁盘并管理',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel="stylesheet" href="/css/modify.css"><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="小鱼技术栈" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(url(https://source.unsplash.com/random/1920x1080?nature));"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "/img/loading.gif" data-lazy-src="https://blog-1310550159.cos.ap-nanjing.myqcloud.com/images/b_cfc1143b373cbe70113b385cd9bb677c.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://pan.smallrains.com"><i class="fa-fw fas fa-cloud"></i><span> 网盘</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/tech/"><i class="fa-fw fas fa-code"></i><span> 技术</span></a></li><li><a class="site-page child" href="/categories/ops/"><i class="fa-fw fas fa-server"></i><span> 运维</span></a></li><li><a class="site-page child" href="/categories/essay/"><i class="fa-fw fas fa-pen"></i><span> 随笔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(http://www.dmoe.cc/random.php);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">小鱼技术栈</span></a><a class="nav-page-title" href="/"><span class="site-name">Linux下使用fdisk新增磁盘并管理</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://pan.smallrains.com"><i class="fa-fw fas fa-cloud"></i><span> 网盘</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/tech/"><i class="fa-fw fas fa-code"></i><span> 技术</span></a></li><li><a class="site-page child" href="/categories/ops/"><i class="fa-fw fas fa-server"></i><span> 运维</span></a></li><li><a class="site-page child" href="/categories/essay/"><i class="fa-fw fas fa-pen"></i><span> 随笔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Linux下使用fdisk新增磁盘并管理</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-01-18T07:40:00.000Z" title="发表于 2025-01-18 15:40:00">2025-01-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-18T02:27:21.485Z" title="更新于 2025-01-18 10:27:21">2025-01-18</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="Linux下使用fdisk新增磁盘并管理"><a href="#Linux下使用fdisk新增磁盘并管理" class="headerlink" title="Linux下使用fdisk新增磁盘并管理"></a>Linux下使用fdisk新增磁盘并管理</h2><p>如果是需要新增硬盘并且分区，有这篇文章就够了</p>
+<h3 id="1-查看磁盘信息"><a href="#1-查看磁盘信息" class="headerlink" title="1. 查看磁盘信息"></a>1. 查看磁盘信息</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">admin@localhost:~$ lsblk -l</span><br><span class="line">NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS</span><br><span class="line">loop0    7:0    0  74.2M  1 loop /snap/core22/1621</span><br><span class="line">loop1    7:1    0     4K  1 loop /snap/bare/5</span><br><span class="line">loop2    7:2    0  73.9M  1 loop /snap/core22/1722</span><br><span class="line">loop3    7:3    0  11.7M  1 loop /snap/desktop-security-center/32</span><br><span class="line">loop4    7:4    0  11.7M  1 loop /snap/desktop-security-center/43</span><br><span class="line">loop5    7:5    0   272M  1 loop /snap/firefox/5091</span><br><span class="line">loop6    7:6    0  10.7M  1 loop /snap/firmware-updater/127</span><br><span class="line">loop7    7:7    0  11.1M  1 loop /snap/firmware-updater/147</span><br><span class="line">loop8    7:8    0 505.1M  1 loop /snap/gnome-42-2204/176</span><br><span class="line">loop9    7:9    0  91.7M  1 loop /snap/gtk-common-themes/1535</span><br><span class="line">loop10   7:10   0  89.7M  1 loop /snap/gtk-common-themes/1536</span><br><span class="line">loop11   7:11   0    14M  1 loop /snap/prompting-client/51</span><br><span class="line">loop12   7:12   0  14.3M  1 loop /snap/prompting-client/80</span><br><span class="line">loop13   7:13   0  10.7M  1 loop /snap/snap-store/1218</span><br><span class="line">loop14   7:14   0  10.8M  1 loop /snap/snap-store/1248</span><br><span class="line">loop15   7:15   0  38.8M  1 loop /snap/snapd/21759</span><br><span class="line">loop16   7:16   0  44.4M  1 loop /snap/snapd/23545</span><br><span class="line">loop17   7:17   0   564K  1 loop /snap/snapd-desktop-integration/247</span><br><span class="line">loop18   7:18   0   568K  1 loop /snap/snapd-desktop-integration/253</span><br><span class="line">sda      8:0    0   200G  0 disk</span><br><span class="line">sda1     8:1    0     1M  0 part</span><br><span class="line">sda2     8:2    0   200G  0 part /</span><br><span class="line">sdb      8:16   0   200G  0 disk</span><br><span class="line">sr0     11:0    1   5.3G  0 rom  /media/admin/Ubuntu 24.10 amd64</span><br><span class="line"></span><br><span class="line"># sda是系统盘，sdb是新增的硬盘</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-给新增的硬盘分区"><a href="#2-给新增的硬盘分区" class="headerlink" title="2. 给新增的硬盘分区"></a>2. 给新增的硬盘分区</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">admin@localhost:~$ <span class="built_in">sudo</span> fdisk /dev/sdb</span><br><span class="line">Command (m <span class="keyword">for</span> <span class="built_in">help</span>): n</span><br><span class="line">Partition <span class="built_in">type</span></span><br><span class="line">   p   primary (0 primary, 0 extended, 4 free)</span><br><span class="line">   e   extended (container <span class="keyword">for</span> logical partitions)  </span><br><span class="line">Select (default p): p</span><br><span class="line">Partition number (1-4, default 1): 1</span><br><span class="line">First sector (2048-419430399, default 2048):</span><br><span class="line">Last sector, +/-sectors or +/-size&#123;K,M,G,T,P&#125; (2048-419430399, default 419430399): +100G</span><br><span class="line">Created a new partition 1 of <span class="built_in">type</span> <span class="string">&#x27;Linux&#x27;</span> and of size 100 GiB.</span><br><span class="line">Command (m <span class="keyword">for</span> <span class="built_in">help</span>): w</span><br><span class="line">The partition table has been altered.</span><br></pre></td></tr></table></figure>
+<h3 id="3-查看分区信息"><a href="#3-查看分区信息" class="headerlink" title="3. 查看分区信息"></a>3. 查看分区信息</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">admin@localhost:~$ <span class="built_in">sudo</span> fdisk -l /dev/sdb</span><br><span class="line">Disk /dev/sdb：200 GiB，214748364800 字节，419430400 个扇区</span><br><span class="line">Disk model: QEMU HARDDISK</span><br><span class="line">单元：扇区 / 1 * 512 = 512 字节</span><br><span class="line">扇区大小(逻辑/物理)：512 字节 / 512 字节</span><br><span class="line">I/O 大小(最小/最佳)：512 字节 / 512 字节</span><br><span class="line">磁盘标签类型：dos</span><br><span class="line">磁盘标识符：0x42c1ed73</span><br><span class="line"></span><br><span class="line">设备       启动  起点      末尾      扇区  大小 Id 类型</span><br><span class="line">/dev/sdb1        2048 209717247 209715200  100G 83 Linux</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可以看倒<code>/dev/sdb1</code>是新增的分区</p>
+</blockquote>
+<h3 id="4-格式化分区"><a href="#4-格式化分区" class="headerlink" title="4. 格式化分区"></a>4. 格式化分区</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">admin@localhost:~$ <span class="built_in">sudo</span> mkfs.ext4 /dev/sdb1</span><br><span class="line">mke2fs 1.47.1 (20-May-2024)</span><br><span class="line">丢弃设备块： 完成</span><br><span class="line">创建含有 26214400 个块（每块 4k）和 6553600 个 inode 的文件系统</span><br><span class="line">文件系统 UUID：6fbe5a64-ae06-4e2f-aaf4-49c1064eafae</span><br><span class="line">超级块的备份存储于下列块：</span><br><span class="line">        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208,</span><br><span class="line">        4096000, 7962624, 11239424, 20480000, 23887872</span><br><span class="line"></span><br><span class="line">正在分配组表： 完成</span><br><span class="line">正在写入 inode表： 完成</span><br><span class="line">创建日志（131072 个块）： 完成</span><br><span class="line">写入超级块和文件系统账户统计信息： 已完成</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-挂载分区"><a href="#5-挂载分区" class="headerlink" title="5. 挂载分区"></a>5. 挂载分区</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">admin@localhost:~$ <span class="built_in">sudo</span> <span class="built_in">mkdir</span> /data</span><br><span class="line">admin@localhost:~$ <span class="built_in">sudo</span> mount /dev/sdb1 /data</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-查看挂载情况"><a href="#6-查看挂载情况" class="headerlink" title="6. 查看挂载情况"></a>6. 查看挂载情况</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">admin@localhost:~$ <span class="built_in">df</span> -h</span><br><span class="line">文件系统        大小  已用  可用 已用% 挂载点</span><br><span class="line">tmpfs           1.6G  1.7M  1.6G    1% /run</span><br><span class="line">/dev/sda2       196G   12G  175G    7% /</span><br><span class="line">tmpfs           7.6G     0  7.6G    0% /dev/shm</span><br><span class="line">tmpfs           5.0M     0  5.0M    0% /run/lock</span><br><span class="line">tmpfs           1.0M     0  1.0M    0% /run/credentials/systemd-journald.service</span><br><span class="line">tmpfs           1.0M     0  1.0M    0% /run/credentials/systemd-udev-load-credentials.service</span><br><span class="line">tmpfs           1.0M     0  1.0M    0% /run/credentials/systemd-tmpfiles-setup-dev-early.service</span><br><span class="line">tmpfs           1.0M     0  1.0M    0% /run/credentials/systemd-tmpfiles-setup-dev.service</span><br><span class="line">tmpfs           1.0M     0  1.0M    0% /run/credentials/systemd-sysctl.service</span><br><span class="line">tmpfs           7.6G   16K  7.6G    1% /tmp</span><br><span class="line">tmpfs           1.0M     0  1.0M    0% /run/credentials/systemd-tmpfiles-setup.service</span><br><span class="line">tmpfs           1.0M     0  1.0M    0% /run/credentials/systemd-resolved.service</span><br><span class="line">tmpfs           1.6G  124K  1.6G    1% /run/user/1001</span><br><span class="line">/dev/sr0        5.3G  5.3G     0  100% /media/admin/Ubuntu 24.10 amd64</span><br><span class="line">/dev/sdb1        98G  2.1M   93G    1% /data</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可以看到<code>/dev/sdb1</code>已经挂载到<code>/data</code>目录下</p>
+</blockquote>
+<h3 id="7-开机自动挂载"><a href="#7-开机自动挂载" class="headerlink" title="7. 开机自动挂载"></a>7. 开机自动挂载</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">admin@localhost:~$ <span class="built_in">sudo</span> vim /etc/fstab</span><br><span class="line"><span class="comment"># 在文件末尾添加</span></span><br><span class="line">/dev/sdb1 /data ext4 defaults 0 0</span><br></pre></td></tr></table></figure>
+<p>或者使用硬盘的UUID来挂载</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">admin@localhost:~$ <span class="built_in">sudo</span> blkid</span><br><span class="line">/dev/sda2: UUID=<span class="string">&quot;f4b1b1b1-1b1b-1b1b-1b1b-1b1b1b1b1b1b&quot;</span> TYPE=<span class="string">&quot;ext4&quot;</span> PARTUUID=<span class="string">&quot;1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b&quot;</span></span><br><span class="line">admin@localhost:~$ <span class="built_in">sudo</span> vim /etc/fstab</span><br><span class="line"><span class="comment"># 在文件末尾添加</span></span><br><span class="line">UUID=6fbe5a64-ae06-4e2f-aaf4-49c1064eafae /data ext4 defaults 0 0</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>查看硬盘的UUID可以使用<code>blkid</code>命令</p>
+</blockquote>
+<blockquote>
+<p>保存退出后，重启电脑，分区就会自动挂载了</p>
+</blockquote>
+<h3 id="8-卸载分区"><a href="#8-卸载分区" class="headerlink" title="8. 卸载分区"></a>8. 卸载分区</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">admin@localhost:~$ <span class="built_in">sudo</span> umount /data</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://smallrains.com">小鱼不吃鱼.</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://smallrains.com/2025/01/18/Linux%E4%B8%8B%E4%BD%BF%E7%94%A8fdisk%E6%96%B0%E5%A2%9E%E7%A3%81%E7%9B%98%E5%B9%B6%E7%AE%A1%E7%90%86/">http://smallrains.com/2025/01/18/Linux%E4%B8%8B%E4%BD%BF%E7%94%A8fdisk%E6%96%B0%E5%A2%9E%E7%A3%81%E7%9B%98%E5%B9%B6%E7%AE%A1%E7%90%86/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://smallrains.com" target="_blank">小鱼技术栈</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="http://www.dmoe.cc/random.php" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.4/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.4/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2024/12/25/%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2hexo%E5%8D%9A%E5%AE%A2%EF%BC%88%E4%B8%80%EF%BC%89/" title="自动化部署hexo博客（一）"><img class="cover" src= "/img/loading.gif" data-lazy-src="https://blog-1310550159.cos.ap-nanjing.myqcloud.com/acg/images/58681464_p0.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">自动化部署hexo博客（一）</div></div><div class="info-2"><div class="info-item-1">一、部署git私有仓库 注意：推荐Centos或Uuntu系统，目前我用的是CentOS系统作为服务器  1.1 安装git工具[root@localhost ~]# yum -y install git 1.2 创建git新用户并且设置密码[root@localhost ~]# useradd git &amp;&amp; echo git |passwd --stdin git 1.3 创建git私有仓库// 注意：先切换git用户在创建[root@localhost ~]# su - git[git@localhost ~]$ mkdir repo[git@localhost ~]$ cd repo/[git@localhost repo]$ git init --bare hexo.git初始化空的 Git 版本库于 /home/git/repo/hexo.git/[git@localhost repo]$ lshexo.git[git@localhost repo]$ cd hexo.git/[git@localhost hexo.git]$ lsbranches ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "/img/loading.gif" data-lazy-src="https://blog-1310550159.cos.ap-nanjing.myqcloud.com/images/b_cfc1143b373cbe70113b385cd9bb677c.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">小鱼不吃鱼.</div><div class="author-info-description">生活明朗，万物可爱</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/yourusername"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/yourusername" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:your-email@domain.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #FFA500;"></i></a><a class="social-icon" href="/sitemap.xml" target="_blank" title="Sitemap"><i class="fas fa-sitemap" style="color: #FFA500;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">这是我的博客</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux%E4%B8%8B%E4%BD%BF%E7%94%A8fdisk%E6%96%B0%E5%A2%9E%E7%A3%81%E7%9B%98%E5%B9%B6%E7%AE%A1%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">Linux下使用fdisk新增磁盘并管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%9F%A5%E7%9C%8B%E7%A3%81%E7%9B%98%E4%BF%A1%E6%81%AF"><span class="toc-number">1.1.</span> <span class="toc-text">1. 查看磁盘信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%BB%99%E6%96%B0%E5%A2%9E%E7%9A%84%E7%A1%AC%E7%9B%98%E5%88%86%E5%8C%BA"><span class="toc-number">1.2.</span> <span class="toc-text">2. 给新增的硬盘分区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%9F%A5%E7%9C%8B%E5%88%86%E5%8C%BA%E4%BF%A1%E6%81%AF"><span class="toc-number">1.3.</span> <span class="toc-text">3. 查看分区信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%88%86%E5%8C%BA"><span class="toc-number">1.4.</span> <span class="toc-text">4. 格式化分区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E6%8C%82%E8%BD%BD%E5%88%86%E5%8C%BA"><span class="toc-number">1.5.</span> <span class="toc-text">5. 挂载分区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%9F%A5%E7%9C%8B%E6%8C%82%E8%BD%BD%E6%83%85%E5%86%B5"><span class="toc-number">1.6.</span> <span class="toc-text">6. 查看挂载情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%BC%80%E6%9C%BA%E8%87%AA%E5%8A%A8%E6%8C%82%E8%BD%BD"><span class="toc-number">1.7.</span> <span class="toc-text">7. 开机自动挂载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E5%8D%B8%E8%BD%BD%E5%88%86%E5%8C%BA"><span class="toc-number">1.8.</span> <span class="toc-text">8. 卸载分区</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/01/18/Linux%E4%B8%8B%E4%BD%BF%E7%94%A8fdisk%E6%96%B0%E5%A2%9E%E7%A3%81%E7%9B%98%E5%B9%B6%E7%AE%A1%E7%90%86/" title="Linux下使用fdisk新增磁盘并管理"><img src= "/img/loading.gif" data-lazy-src="http://www.dmoe.cc/random.php" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Linux下使用fdisk新增磁盘并管理"/></a><div class="content"><a class="title" href="/2025/01/18/Linux%E4%B8%8B%E4%BD%BF%E7%94%A8fdisk%E6%96%B0%E5%A2%9E%E7%A3%81%E7%9B%98%E5%B9%B6%E7%AE%A1%E7%90%86/" title="Linux下使用fdisk新增磁盘并管理">Linux下使用fdisk新增磁盘并管理</a><time datetime="2025-01-18T07:40:00.000Z" title="发表于 2025-01-18 15:40:00">2025-01-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/12/25/%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2hexo%E5%8D%9A%E5%AE%A2%EF%BC%88%E4%B8%80%EF%BC%89/" title="自动化部署hexo博客（一）"><img src= "/img/loading.gif" data-lazy-src="https://blog-1310550159.cos.ap-nanjing.myqcloud.com/acg/images/58681464_p0.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="自动化部署hexo博客（一）"/></a><div class="content"><a class="title" href="/2024/12/25/%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2hexo%E5%8D%9A%E5%AE%A2%EF%BC%88%E4%B8%80%EF%BC%89/" title="自动化部署hexo博客（一）">自动化部署hexo博客（一）</a><time datetime="2024-12-25T12:26:00.000Z" title="发表于 2024-12-25 20:26:00">2024-12-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/12/25/%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2hexo%E5%8D%9A%E5%AE%A2%EF%BC%88%E4%BA%8C%EF%BC%89/" title="自动化部署hexo博客（二）"><img src= "/img/loading.gif" data-lazy-src="https://blog-1310550159.cos.ap-nanjing.myqcloud.com/acg/images/58681464_p0.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="自动化部署hexo博客（二）"/></a><div class="content"><a class="title" href="/2024/12/25/%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2hexo%E5%8D%9A%E5%AE%A2%EF%BC%88%E4%BA%8C%EF%BC%89/" title="自动化部署hexo博客（二）">自动化部署hexo博客（二）</a><time datetime="2024-12-25T12:26:00.000Z" title="发表于 2024-12-25 20:26:00">2024-12-25</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.2.2"></script><script src="/js/main.js?v=5.2.2"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.4.0/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.4/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.4/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
