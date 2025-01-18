@@ -29,7 +29,7 @@
   </url>
   
   <url>
-    <loc>http://smallrains.com/categories/tech/index.html</loc>
+    <loc>http://smallrains.com/categories/ops/index.html</loc>
     
     <lastmod>2025-01-18</lastmod>
     
@@ -38,7 +38,7 @@
   </url>
   
   <url>
-    <loc>http://smallrains.com/categories/ops/index.html</loc>
+    <loc>http://smallrains.com/categories/tech/index.html</loc>
     
     <lastmod>2025-01-18</lastmod>
     
@@ -74,7 +74,7 @@
   </url>
   
   <url>
-    <loc>http://smallrains.com/2024/12/25/%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2hexo%E5%8D%9A%E5%AE%A2%EF%BC%88%E4%B8%80%EF%BC%89/</loc>
+    <loc>http://smallrains.com/2024/12/25/%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2hexo%E5%8D%9A%E5%AE%A2%EF%BC%88%E4%BA%8C%EF%BC%89/</loc>
     
     <lastmod>2025-01-18</lastmod>
     
@@ -83,7 +83,7 @@
   </url>
   
   <url>
-    <loc>http://smallrains.com/2024/12/25/%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2hexo%E5%8D%9A%E5%AE%A2%EF%BC%88%E4%BA%8C%EF%BC%89/</loc>
+    <loc>http://smallrains.com/2024/12/25/%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2hexo%E5%8D%9A%E5%AE%A2%EF%BC%88%E4%B8%80%EF%BC%89/</loc>
     
     <lastmod>2025-01-18</lastmod>
     
@@ -101,13 +101,6 @@
 
   
   <url>
-    <loc>http://smallrains.com/tags/hexo%E5%8D%9A%E5%AE%A2/</loc>
-    <lastmod>2025-01-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>http://smallrains.com/tags/Linux/</loc>
     <lastmod>2025-01-18</lastmod>
     <changefreq>weekly</changefreq>
@@ -116,6 +109,13 @@
   
   <url>
     <loc>http://smallrains.com/tags/%E7%A3%81%E7%9B%98%E7%AE%A1%E7%90%86/</loc>
+    <lastmod>2025-01-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://smallrains.com/tags/hexo%E5%8D%9A%E5%AE%A2/</loc>
     <lastmod>2025-01-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
